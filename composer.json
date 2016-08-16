@@ -1,0 +1,17 @@
+{
+  "require": {
+    "clearidea/neuron": "0.6.*",
+    "robmorgan/phinx": "^0.4.6"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer"     : "2.*",
+    "phpmd/phpmd"                   : "@stable",
+    "phpunit/phpunit"               : "4.7.7",
+    "phpdocumentor/phpdocumentor"   : "2.*"
+  },
+  "autoload": {
+    "psr-0": {
+      "Notion" : "src"
+    }
+  }
+}
