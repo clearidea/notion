@@ -234,6 +234,12 @@ class Router implements IRunnable
 
 		$Route = $this->getRoute( Notion\RequestMethod::getType(), $aArgv[ 'route' ] );
 
+		if( !$Route )
+		{
+			$Route = $this->getRoute( Notion\RequestMethod::GET, '404' );
+			$Route->parameters = $aArgv;
+		}
+
 		echo $this->dispatch( $Route );
 	}
 }
