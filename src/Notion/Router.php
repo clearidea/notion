@@ -227,19 +227,34 @@ class Router implements IRunnable
 	 */
 	function run( array $aArgv = null )
 	{
-		if( !array_key_exists( 'route', $aArgv ) )
+		if( !$aArgv || !array_key_exists( 'route', $aArgv ) )
 		{
 			throw new \Exception( 'Missing route.' );
 		}
 
-		$Route = $this->getRoute( Notion\RequestMethod::getType(), $aArgv[ 'route' ] );
+		$sType = '';
+
+		if( array_key_exists( 'type', $aArgv ) )
+		{
+			$sType = $aArgv[ 'type' ];
+		}
+
+		$Route = $this->getRoute( Notion\RequestMethod::getType( $sType ), $aArgv[ 'route' ] );
 
 		if( !$Route )
 		{
 			$Route = $this->getRoute( Notion\RequestMethod::GET, '404' );
-			$Route->parameters = $aArgv;
+
+			if( $Route )
+			{
+				$Route->parameters = $aArgv;
+			}
+			else
+			{
+				throw new \Exception( "Missing 404 route." );
+			}
 		}
 
-		echo $this->dispatch( $Route );
+		$this->dispatch( $Route );
 	}
 }

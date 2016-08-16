@@ -113,7 +113,64 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 
 		$this->Router->dispatch( $Route );
+	}
 
+	public function testRunSuccess()
+	{
+		$this->Router->get( '/', function(){} );
+
+		try
+		{
+			$this->Router->run( [ 'route' => '/', 'type' => 'GET' ] );
+		}
+		catch( Exception $exception )
+		{
+			$this->fail( $exception->getMessage() );
+		}
+	}
+
+	public function testRunMissingRoute()
+	{
+		$this->Router->get( '/', function(){} );
+
+		try
+		{
+			$this->Router->run();
+			$this->fail( "Should have failed due to missing route." );
+		}
+		catch( Exception $exception )
+		{
+		}
+	}
+
+	public function testRun404Fail()
+	{
+		$this->Router->get( '/', function(){} );
+
+		try
+		{
+			$this->Router->run( [ 'route' => 'foo', 'type' => 'GET' ] );
+			$this->fail( 'Should fail processing route.' );
+		}
+		catch( Exception $exception )
+		{
+		}
+	}
+
+	public function testRun404Success()
+	{
+		$this->Router->get( '/', function(){} );
+
+		$this->Router->get( '/404', function(){} );
+
+		try
+		{
+			$this->Router->run( [ 'route' => 'foo', 'type' => 'GET' ] );
+			$this->fail( 'Should fail processing route.' );
+		}
+		catch( Exception $exception )
+		{
+		}
 	}
 
 }
