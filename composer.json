@@ -1,7 +1,16 @@
 {
+  "name": "clearidea/notion",
+  "description": "A lightweight router/dispatcher.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Lee Jones",
+      "email": "lee@clearidea.us"
+    }
+  ],
   "require": {
-    "clearidea/neuron": "0.6.*",
-    "robmorgan/phinx": "^0.4.6"
+    "clearidea/neuron": "0.6.*"
   },
   "require-dev": {
     "squizlabs/php_codesniffer"     : "2.*",
