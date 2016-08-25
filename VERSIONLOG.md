@@ -1,6 +1,7 @@
 #Versions
 
 ### 0.1.2
+* readme update.
 
 ### 0.1.1 2016-08-16
 
