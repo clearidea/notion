@@ -27,3 +27,6 @@ composer.phar
 /build/coverage/*
 /build/pdepend/*
 
+cache.properties
+composer.lock
+
