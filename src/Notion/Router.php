@@ -36,7 +36,6 @@ class Router implements IRunnable
 	public function delete( $sRoute, $function )
 	{
 		$this->addRoute( $this->_aDelete, $sRoute, $function );
-
 		return $this;
 	}
 
@@ -78,62 +77,13 @@ class Router implements IRunnable
 	 * @param $sUri
 	 * @return array|bool
 	 */
-	protected function processRoute( $Route, $sUri )
+	protected function processRoute( Route $Route, $sUri )
 	{
-		$aDetails	= array();
-		$aParams		= array();
-
 		// Does route have parameters?
 
 		if( strpos( $Route->path, ':' ) )
 		{
-			$aParts = explode( '/', $Route->path );
-			array_shift( $aParts );
-
-			foreach( $aParts as $sPart )
-			{
-				if( substr( $sPart, 0, 1 ) == ':' )
-				{
-					$aDetails[] = array(
-						'param' 	=> substr( $sPart, 1 ),
-						'action'	=> false
-					);
-				}
-				else
-				{
-					$aDetails[] = array(
-						'param' 	=> false,
-						'action'	=> $sPart
-					);
-				}
-			}
-
-			$aUri = explode( '/', $sUri );
-
-			$iOffset = 0;
-
-			foreach( $aUri as $sPart )
-			{
-				if( $iOffset >= count( $aDetails ) )
-				{
-					return false;
-				}
-
-				$action = $aDetails[ $iOffset ][ 'action' ];
-				if( $action )
-				{
-					if( $action != $sPart )
-					{
-						return false;
-					}
-				}
-				else
-				{
-					$aParams[ $aDetails[ $iOffset ][ 'param' ] ]	= $sPart;
-				}
-				$iOffset++;
-			}
-			return $aParams;
+			return $this->processRouteWithParameters( $Route, $sUri );
 		}
 		else
 		{
@@ -150,6 +100,60 @@ class Router implements IRunnable
 
 		return false;
 	}
+
+	/**
+	 * @param Route $Route
+	 * @param $sUri
+	 * @return array
+	 */
+	protected function processRouteWithParameters( Route $Route, $sUri )
+	{
+		$aDetails = $Route->parseParams();
+
+		return $this->extractRouteParams( $sUri, $aDetails );
+	}
+
+	/**
+	 * Populates a param array with the data from the uri.
+	 * @param $sUri
+	 * @param $aDetails
+	 * @return array
+	 */
+	protected function extractRouteParams( $sUri, $aDetails )
+	{
+		$aUri = explode( '/', $sUri );
+
+		$aParams = [];
+		$iOffset = 0;
+
+		foreach( $aUri as $sPart )
+		{
+			if( $iOffset >= count( $aDetails ) )
+			{
+				return [];
+			}
+
+			$action = $aDetails[ $iOffset ][ 'action' ];
+			if( $action )
+			{
+				if( $action != $sPart )
+				{
+					return [];
+				}
+			} else
+			{
+				$aParams[ $aDetails[ $iOffset ][ 'param' ] ] = $sPart;
+			}
+			$iOffset++;
+		}
+		return $aParams;
+	}
+
+	/**
+	 * Returns a list of routes mapped to the current request method.
+	 * @param $iMethod
+	 * @return array
+	 */
 
 	protected function getRouteArray( $iMethod )
 	{

@@ -17,7 +17,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 	public function testDelete()
 	{
-		$this->Router->delete(
+		his->Router->delete(
 			'/delete/:id',
 			function()
 			{
