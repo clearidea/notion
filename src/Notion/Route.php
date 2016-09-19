@@ -4,9 +4,9 @@ namespace Notion;
 
 class Route
 {
-	public $path;
-	public $function;
-	public $parameters;
+	public $Path;
+	public $Function;
+	public $Parameters;
 
 	public function __construct( $path, $function )
 	{
@@ -15,9 +15,9 @@ class Route
 			throw new \Exception( 'Route: function not callable.' );
 		}
 
-		$this->path       = $path;
-		$this->function   = $function;
-		$this->parameters = null;
+		$this->Path       = $path;
+		$this->Function   = $function;
+		$this->Parameters = null;
 	}
 
 	/**
@@ -30,26 +30,47 @@ class Route
 	{
 		$aDetails = [];
 
-		$aParts = explode( '/', $this->path );
+		$aParts = explode( '/', $this->Path );
 		array_shift( $aParts );
 
 		foreach( $aParts as $sPart )
 		{
 			if( substr( $sPart, 0, 1 ) == ':' )
 			{
-				$aDetails[] = array(
-					'param'  => substr( $sPart, 1 ),
+				$Param = substr( $sPart, 1 );
+
+				$this->checkForDuplicateParams( $Param, $aDetails );
+
+				$aDetails[] = [
+					'param'  => $Param,
 					'action' => false
-				);
+				];
 			}
 			else
 			{
-				$aDetails[] = array(
+				$aDetails[] = [
 					'param'  => false,
 					'action' => $sPart
-				);
+				];
 			}
 		}
 		return $aDetails;
+	}
+
+	/**
+	 * @param $Param
+	 * @param $Params
+	 * @throws RouteParamException
+	 */
+
+	protected function checkForDuplicateParams( $Param, $Params )
+	{
+		foreach( $Params as $Current )
+		{
+			if( $Param == $Current[ 'param' ] )
+			{
+				throw new RouteParamException( "Duplicate parameter '$Param' found for route {$this->Path}'." );
+			}
+		}
 	}
 }

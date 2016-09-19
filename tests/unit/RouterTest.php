@@ -17,7 +17,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 	public function testDelete()
 	{
-		his->Router->delete(
+		$this->Router->delete(
 			'/delete/:id',
 			function()
 			{
@@ -35,9 +35,36 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 
 		$this->assertEquals(
-			$Route->path,
+			$Route->Path,
 			'/delete/:id'
 		);
+	}
+
+	public function testDuplicateParamNames()
+	{
+		$Caught = false;
+
+		$this->Router->get( '/:test/:test',
+			function( $parameters )
+			{
+			}
+		);
+
+		try
+		{
+			$test = $this->Router->run(
+				[
+					'route' => 'test/test',
+					'type' => 'GET'
+				]
+			);
+		}
+		catch( \Notion\RouteParamException $exception )
+		{
+			$Caught = true;
+		}
+
+		$this->assertTrue( $Caught );
 	}
 
 	public function testGet()
@@ -54,8 +81,44 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 
 		$this->assertEquals(
-			$Route->path,
+			$Route->Path,
 			'/get/:id'
+		);
+	}
+
+	public function testGetMultipleParameters()
+	{
+		$this->Router->get( '/:controller/:action',
+			function( $parameters )
+			{
+				return $parameters[ 'controller' ].':'.$parameters[ 'action' ];
+			}
+		);
+
+		$Route = $this->Router->getRoute(
+			Notion\RequestMethod::GET,
+			'test/run'
+		);
+
+		$this->assertNotNull(
+			$Route
+		);
+
+		$this->assertEquals(
+			$Route->Path,
+			'/:controller/:action'
+		);
+
+		$test = $this->Router->run(
+			[
+				'route' => 'test/run',
+				'type'  => 'GET'
+			]
+		);
+
+		$this->assertEquals(
+			'test:run',
+			$test
 		);
 	}
 
@@ -73,7 +136,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 
 		$this->assertEquals(
-			$Route->path,
+			$Route->Path,
 			'/post'
 		);
 	}
@@ -92,7 +155,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 
 		$this->assertEquals(
-			$Route->path,
+			$Route->Path,
 			'/put'
 		);
 	}

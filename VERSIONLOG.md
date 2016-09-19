@@ -2,6 +2,9 @@
 
 ### 0.1.4
 
+* Run method now returns the result of the matching routes lambda.
+* Added RouteParamException for catching duplicate parameter names.
+
 ### 0.1.3 2016-09-14
 
 * readme update.

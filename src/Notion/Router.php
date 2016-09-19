@@ -81,7 +81,7 @@ class Router implements IRunnable
 	{
 		// Does route have parameters?
 
-		if( strpos( $Route->path, ':' ) )
+		if( strpos( $Route->Path, ':' ) )
 		{
 			return $this->processRouteWithParameters( $Route, $sUri );
 		}
@@ -92,7 +92,7 @@ class Router implements IRunnable
 				$sUri = '/' . $sUri;
 			}
 
-			if( $Route->path == $sUri )
+			if( $Route->Path == $sUri )
 			{
 				return true;
 			}
@@ -199,11 +199,11 @@ class Router implements IRunnable
 			{
 				if( is_array( $aParams ) )
 				{
-					$Route->parameters = $aParams;
+					$Route->Parameters = $aParams;
 				}
 				else
 				{
-					$Route->parameters = null;
+					$Route->Parameters = null;
 				}
 
 				return $Route;
@@ -219,14 +219,14 @@ class Router implements IRunnable
 	 */
 	public function dispatch( Route $Route )
 	{
-		$function = $Route->function;
+		$function = $Route->Function;
 
-		return $function( $Route->parameters );
+		return $function( $Route->Parameters );
 	}
 
 	/**
 	 * @param array|null $aArgv
-	 * @return void
+	 * @return result of route lambda.
 	 * @throws \Exception
 	 */
 	function run( array $aArgv = null )
@@ -251,7 +251,7 @@ class Router implements IRunnable
 
 			if( $Route )
 			{
-				$Route->parameters = $aArgv;
+				$Route->Parameters = $aArgv;
 			}
 			else
 			{
@@ -259,6 +259,6 @@ class Router implements IRunnable
 			}
 		}
 
-		$this->dispatch( $Route );
+		return $this->dispatch( $Route );
 	}
 }
