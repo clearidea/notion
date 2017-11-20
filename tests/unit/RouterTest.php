@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: lee
- * Date: 8/15/16
- * Time: 5:45 PM
- */
 class RouterTest extends PHPUnit_Framework_TestCase
 {
 	public $Router;
@@ -35,9 +29,36 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 
 		$this->assertEquals(
-			$Route->path,
+			$Route->Path,
 			'/delete/:id'
 		);
+	}
+
+	public function testDuplicateParamNames()
+	{
+		$Caught = false;
+
+		$this->Router->get( '/:test/:test',
+			function( $parameters )
+			{
+			}
+		);
+
+		try
+		{
+			$test = $this->Router->run(
+				[
+					'route' => 'test/test',
+					'type'  => 'GET'
+				]
+			);
+		}
+		catch( \Notion\RouteParamException $exception )
+		{
+			$Caught = true;
+		}
+
+		$this->assertTrue( $Caught );
 	}
 
 	public function testGet()
@@ -54,8 +75,54 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 
 		$this->assertEquals(
-			$Route->path,
+			$Route->Path,
 			'/get/:id'
+		);
+
+		$Route = $this->Router->getRoute(
+			Notion\RequestMethod::GET,
+			'get/1/2'
+		);
+
+		$Route = $this->Router->getRoute(
+			Notion\RequestMethod::GET,
+			'monkey/1/2'
+		);
+	}
+
+	public function testGetMultipleParameters()
+	{
+		$this->Router->get( '/:controller/:action',
+			function( $parameters )
+			{
+				return $parameters[ 'controller' ].':'.$parameters[ 'action' ];
+			}
+		);
+
+		$Route = $this->Router->getRoute(
+			Notion\RequestMethod::GET,
+			'test/run'
+		);
+
+		$this->assertNotNull(
+			$Route
+		);
+
+		$this->assertEquals(
+			$Route->Path,
+			'/:controller/:action'
+		);
+
+		$test = $this->Router->run(
+			[
+				'route' => 'test/run',
+				'type'  => 'GET'
+			]
+		);
+
+		$this->assertEquals(
+			'test:run',
+			$test
 		);
 	}
 
@@ -73,7 +140,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 
 		$this->assertEquals(
-			$Route->path,
+			$Route->Path,
 			'/post'
 		);
 	}
@@ -92,7 +159,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 
 		$this->assertEquals(
-			$Route->path,
+			$Route->Path,
 			'/put'
 		);
 	}
@@ -103,7 +170,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 			'/delete/:id',
 			function( $parameters )
 			{
-				echo "id=$parameters[id]";
 			}
 		);
 
@@ -121,7 +187,12 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		try
 		{
-			$this->Router->run( [ 'route' => '/', 'type' => 'GET' ] );
+			$this->Router->run(
+				[
+					'route' => '/',
+					'type'  => 'GET'
+				]
+			);
 		}
 		catch( Exception $exception )
 		{
@@ -149,7 +220,13 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		try
 		{
-			$this->Router->run( [ 'route' => 'foo', 'type' => 'GET' ] );
+			$this->Router->run(
+				[
+					'route' => 'foo',
+					'type'  => 'GET'
+				]
+			);
+
 			$this->fail( 'Should fail processing route.' );
 		}
 		catch( Exception $exception )
@@ -159,13 +236,18 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 	public function testRun404Success()
 	{
-		$this->Router->get( '/', function(){} );
-
+		$this->Router->get( '/',    function(){} );
 		$this->Router->get( '/404', function(){} );
 
 		try
 		{
-			$this->Router->run( [ 'route' => 'foo', 'type' => 'GET' ] );
+			$this->Router->run(
+				[
+					'route' => 'foo',
+					'type'  => 'GET'
+				]
+			);
+
 			$this->fail( 'Should fail processing route.' );
 		}
 		catch( Exception $exception )

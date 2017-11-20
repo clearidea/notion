@@ -36,7 +36,6 @@ class Router implements IRunnable
 	public function delete( $sRoute, $function )
 	{
 		$this->addRoute( $this->_aDelete, $sRoute, $function );
-
 		return $this;
 	}
 
@@ -78,62 +77,13 @@ class Router implements IRunnable
 	 * @param $sUri
 	 * @return array|bool
 	 */
-	protected function processRoute( $Route, $sUri )
+	protected function processRoute( Route $Route, $sUri )
 	{
-		$aDetails	= array();
-		$aParams		= array();
-
 		// Does route have parameters?
 
-		if( strpos( $Route->path, ':' ) )
+		if( strpos( $Route->Path, ':' ) )
 		{
-			$aParts = explode( '/', $Route->path );
-			array_shift( $aParts );
-
-			foreach( $aParts as $sPart )
-			{
-				if( substr( $sPart, 0, 1 ) == ':' )
-				{
-					$aDetails[] = array(
-						'param' 	=> substr( $sPart, 1 ),
-						'action'	=> false
-					);
-				}
-				else
-				{
-					$aDetails[] = array(
-						'param' 	=> false,
-						'action'	=> $sPart
-					);
-				}
-			}
-
-			$aUri = explode( '/', $sUri );
-
-			$iOffset = 0;
-
-			foreach( $aUri as $sPart )
-			{
-				if( $iOffset >= count( $aDetails ) )
-				{
-					return false;
-				}
-
-				$action = $aDetails[ $iOffset ][ 'action' ];
-				if( $action )
-				{
-					if( $action != $sPart )
-					{
-						return false;
-					}
-				}
-				else
-				{
-					$aParams[ $aDetails[ $iOffset ][ 'param' ] ]	= $sPart;
-				}
-				$iOffset++;
-			}
-			return $aParams;
+			return $this->processRouteWithParameters( $Route, $sUri );
 		}
 		else
 		{
@@ -142,7 +92,7 @@ class Router implements IRunnable
 				$sUri = '/' . $sUri;
 			}
 
-			if( $Route->path == $sUri )
+			if( $Route->Path == $sUri )
 			{
 				return true;
 			}
@@ -150,6 +100,62 @@ class Router implements IRunnable
 
 		return false;
 	}
+
+	/**
+	 * @param Route $Route
+	 * @param $sUri
+	 * @return array
+	 */
+	protected function processRouteWithParameters( Route $Route, $sUri )
+	{
+		$aDetails = $Route->parseParams();
+
+		return $this->extractRouteParams( $sUri, $aDetails );
+	}
+
+	/**
+	 * Populates a param array with the data from the uri.
+	 * @param $sUri
+	 * @param $aDetails
+	 * @return array
+	 */
+	protected function extractRouteParams( $sUri, $aDetails )
+	{
+		$aUri = explode( '/', $sUri );
+
+		$aParams = [];
+		$iOffset = 0;
+
+		foreach( $aUri as $sPart )
+		{
+			if( $iOffset >= count( $aDetails ) )
+			{
+				return [];
+			}
+
+			$action = $aDetails[ $iOffset ][ 'action' ];
+			if( $action )
+			{
+				if( $action != $sPart )
+				{
+					return [];
+				}
+			}
+			else
+			{
+				$aParams[ $aDetails[ $iOffset ][ 'param' ] ] = $sPart;
+			}
+
+			$iOffset++;
+		}
+		return $aParams;
+	}
+
+	/**
+	 * Returns a list of routes mapped to the current request method.
+	 * @param $iMethod
+	 * @return array
+	 */
 
 	protected function getRouteArray( $iMethod )
 	{
@@ -195,11 +201,11 @@ class Router implements IRunnable
 			{
 				if( is_array( $aParams ) )
 				{
-					$Route->parameters = $aParams;
+					$Route->Parameters = $aParams;
 				}
 				else
 				{
-					$Route->parameters = null;
+					$Route->Parameters = null;
 				}
 
 				return $Route;
@@ -213,23 +219,30 @@ class Router implements IRunnable
 	 * @param \Notion\Route $Route
 	 * @return mixed
 	 */
+
 	public function dispatch( Route $Route )
 	{
-		$function = $Route->function;
+		$function = $Route->Function;
 
-		return $function( $Route->parameters );
+		return $function( $Route->Parameters );
 	}
 
 	/**
 	 * @param array|null $aArgv
-	 * @return void
+	 * @return result of route lambda.
 	 * @throws \Exception
 	 */
+
 	function run( array $aArgv = null )
 	{
 		if( !$aArgv || !array_key_exists( 'route', $aArgv ) )
 		{
 			throw new \Exception( 'Missing route.' );
+		}
+
+		if( !$aArgv || !array_key_exists( 'type', $aArgv ) )
+		{
+			throw new \Exception( 'Missing method type.' );
 		}
 
 		$sType = '';
@@ -247,7 +260,7 @@ class Router implements IRunnable
 
 			if( $Route )
 			{
-				$Route->parameters = $aArgv;
+				$Route->Parameters = $aArgv;
 			}
 			else
 			{
@@ -255,6 +268,6 @@ class Router implements IRunnable
 			}
 		}
 
-		$this->dispatch( $Route );
+		return $this->dispatch( $Route );
 	}
 }

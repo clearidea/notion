@@ -15,7 +15,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
 			$Route = new \Notion\Route( 'method', function() { return 'test';} );
 
 			$this->assertEquals(
-				$Route->path,
+				$Route->Path,
 				'method'
 			);
 		}
