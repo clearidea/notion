@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: lee
- * Date: 8/15/16
- * Time: 5:45 PM
- */
 class RouterTest extends PHPUnit_Framework_TestCase
 {
 	public $Router;
@@ -55,7 +49,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 			$test = $this->Router->run(
 				[
 					'route' => 'test/test',
-					'type' => 'GET'
+					'type'  => 'GET'
 				]
 			);
 		}
@@ -83,6 +77,16 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals(
 			$Route->Path,
 			'/get/:id'
+		);
+
+		$Route = $this->Router->getRoute(
+			Notion\RequestMethod::GET,
+			'get/1/2'
+		);
+
+		$Route = $this->Router->getRoute(
+			Notion\RequestMethod::GET,
+			'monkey/1/2'
 		);
 	}
 
@@ -166,7 +170,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 			'/delete/:id',
 			function( $parameters )
 			{
-				echo "id=$parameters[id]";
 			}
 		);
 
@@ -184,7 +187,12 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		try
 		{
-			$this->Router->run( [ 'route' => '/', 'type' => 'GET' ] );
+			$this->Router->run(
+				[
+					'route' => '/',
+					'type'  => 'GET'
+				]
+			);
 		}
 		catch( Exception $exception )
 		{
@@ -212,7 +220,13 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		try
 		{
-			$this->Router->run( [ 'route' => 'foo', 'type' => 'GET' ] );
+			$this->Router->run(
+				[
+					'route' => 'foo',
+					'type'  => 'GET'
+				]
+			);
+
 			$this->fail( 'Should fail processing route.' );
 		}
 		catch( Exception $exception )
@@ -222,13 +236,18 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 	public function testRun404Success()
 	{
-		$this->Router->get( '/', function(){} );
-
+		$this->Router->get( '/',    function(){} );
 		$this->Router->get( '/404', function(){} );
 
 		try
 		{
-			$this->Router->run( [ 'route' => 'foo', 'type' => 'GET' ] );
+			$this->Router->run(
+				[
+					'route' => 'foo',
+					'type'  => 'GET'
+				]
+			);
+
 			$this->fail( 'Should fail processing route.' );
 		}
 		catch( Exception $exception )

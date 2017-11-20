@@ -140,10 +140,12 @@ class Router implements IRunnable
 				{
 					return [];
 				}
-			} else
+			}
+			else
 			{
 				$aParams[ $aDetails[ $iOffset ][ 'param' ] ] = $sPart;
 			}
+
 			$iOffset++;
 		}
 		return $aParams;
@@ -217,6 +219,7 @@ class Router implements IRunnable
 	 * @param \Notion\Route $Route
 	 * @return mixed
 	 */
+
 	public function dispatch( Route $Route )
 	{
 		$function = $Route->Function;
@@ -229,11 +232,17 @@ class Router implements IRunnable
 	 * @return result of route lambda.
 	 * @throws \Exception
 	 */
+
 	function run( array $aArgv = null )
 	{
 		if( !$aArgv || !array_key_exists( 'route', $aArgv ) )
 		{
 			throw new \Exception( 'Missing route.' );
+		}
+
+		if( !$aArgv || !array_key_exists( 'type', $aArgv ) )
+		{
+			throw new \Exception( 'Missing method type.' );
 		}
 
 		$sType = '';

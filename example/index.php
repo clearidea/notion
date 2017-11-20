@@ -28,10 +28,12 @@ $App->get( '/',
 		}
 	);
 
-$Filter = new \Neuron\Data\Filter\Get();
+$Get    = new \Neuron\Data\Filter\Get();
+$Server = new \Neuron\Data\Filter\Server();
 
 $App->run(
 	[
-		'route' => $Filter->filterScalar( 'route' )
+		'route' => $Get->filterScalar( 'route' ),
+		'type'  => $Server->filterScalar( 'METHOD' )
 	]
 );

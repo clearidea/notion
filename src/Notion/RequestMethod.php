@@ -12,23 +12,13 @@ class RequestMethod
 
 	/**
 	 * Gets the text string for a type.
-	 * @param sMethod type override.
+	 * @param $Method string type override.
 	 * @return int
 	 */
-	static public function getType( $sMethod = '' )
+
+	static public function getType( $Method )
 	{
-		/// @todo replace with server->filterscalar()
-
-		if( !$sMethod )
-		{
-			$method = $_SERVER[ 'REQUEST_METHOD' ];
-		}
-		else
-		{
-			$method = $sMethod;
-		}
-
-		switch( $method )
+		switch( $Method )
 		{
 			case 'PUT':
 				return self::PUT;

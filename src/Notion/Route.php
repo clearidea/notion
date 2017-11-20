@@ -8,6 +8,13 @@ class Route
 	public $Function;
 	public $Parameters;
 
+	/**
+	 * Route constructor.
+	 * @param $path string route path i.e. /part/new or /part/:id
+	 * @param $function function the function to call on a matching route.
+	 * @throws \Exception
+	 */
+
 	public function __construct( $path, $function )
 	{
 		if( !is_callable( $function ) )
@@ -22,7 +29,6 @@ class Route
 
 	/**
 	 * Extracts the template array from the route definition.
-	 * @param $Route
 	 * @return array
 	 */
 
