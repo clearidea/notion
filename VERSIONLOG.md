@@ -1,6 +1,6 @@
 # Versions
 
-### 0.1.7
+### 0.1.7 2017-12-16
 * Fixed a hole in the pattern matcher for multiple parameters.
 * Routes now require a leading /.
 
