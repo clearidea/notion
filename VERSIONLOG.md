@@ -1,6 +1,6 @@
 # Versions
 
-### 0.1.8
+### 0.1.8 2017-12-16
 * Removed some debug code. :|
 
 ### 0.1.7 2017-12-16
