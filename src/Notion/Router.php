@@ -87,7 +87,11 @@ class Router implements IRunnable
 		}
 		else
 		{
-			if( $sUri[ 0 ] != '/' )
+			if( !$sUri )
+			{
+				$sUri = '/';
+			}
+			else if( $sUri[ 0 ] != '/' )
 			{
 				$sUri = '/' . $sUri;
 			}

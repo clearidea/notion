@@ -73,9 +73,16 @@ several routes including one with a variable.
         );
     
     $Filter = new \Neuron\Data\Filter\Get();
+    $Server = new \Neuron\Data\Filter\Server();
     
     $App->run(
         [
-            'route' => $Filter->filterScalar( 'route' )
+            'route' => $Filter->filterScalar( 'route' ),
+            'type'  => $Server->filterScalar( 'REQUEST_METHOD' ),
+            'extra' =>
+                [ 'test' => '1234' ]
         ]
     );
+
+If present, the extra element is merged into the parameters array
+before it is passed to the routes closure.

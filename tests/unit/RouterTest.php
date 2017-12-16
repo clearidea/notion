@@ -255,6 +255,18 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		}
 	}
 
+	public function testEmptyRoute()
+	{
+		$this->Router->get( '/',    function(){} );
+
+		$this->Router->run(
+			[
+				'route' => '',
+				'type'  => 'GET'
+			]
+		);
+	}
+
 	public function testExtraParams()
 	{
 		$Extra = '';
