@@ -1,6 +1,7 @@
 # Versions
 
-### 0.1.6
+### 0.1.6 2017-12-16
+* Fix for empty routes.
 
 ### 0.1.5 2017-12-16
 * 'extra' params can now be bassed into the run array which are in turn
