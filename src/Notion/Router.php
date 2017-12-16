@@ -88,7 +88,6 @@ class Router implements IRunnable
 
 			$RouteSegments = count( explode( '/', $Route->Path ) );
 
-			echo "$sUri $Segments, {$Route->Path} $RouteSegments ";
 			if( $Segments == $RouteSegments )
 			{
 				return $this->processRouteWithParameters( $Route, $sUri );
