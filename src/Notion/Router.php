@@ -228,31 +228,31 @@ class Router implements IRunnable
 	}
 
 	/**
-	 * @param array|null $aArgv
+	 * @param array|null $Argv
 	 * @return result of route lambda.
 	 * @throws \Exception
 	 */
 
-	function run( array $aArgv = null )
+	function run( array $Argv = null )
 	{
-		if( !$aArgv || !array_key_exists( 'route', $aArgv ) )
+		if( !$Argv || !array_key_exists( 'route', $Argv ) )
 		{
 			throw new \Exception( 'Missing route.' );
 		}
 
-		if( !$aArgv || !array_key_exists( 'type', $aArgv ) )
+		if( !$Argv || !array_key_exists( 'type', $Argv ) )
 		{
 			throw new \Exception( 'Missing method type.' );
 		}
 
 		$sType = '';
 
-		if( array_key_exists( 'type', $aArgv ) )
+		if( array_key_exists( 'type', $Argv ) )
 		{
-			$sType = $aArgv[ 'type' ];
+			$sType = $Argv[ 'type' ];
 		}
 
-		$Route = $this->getRoute( Notion\RequestMethod::getType( $sType ), $aArgv[ 'route' ] );
+		$Route = $this->getRoute( Notion\RequestMethod::getType( $sType ), $Argv[ 'route' ] );
 
 		if( !$Route )
 		{
@@ -260,11 +260,23 @@ class Router implements IRunnable
 
 			if( $Route )
 			{
-				$Route->Parameters = $aArgv;
+				$Route->Parameters = $Argv;
 			}
 			else
 			{
 				throw new \Exception( "Missing 404 route." );
+			}
+		}
+
+		if( array_key_exists( 'extra', $Argv ) )
+		{
+			if( is_array( $Route->Parameters ) )
+			{
+				$Route->Parameters = array_merge( $Route->Parameters, $Argv[ 'extra' ] );
+			}
+			else
+			{
+				$Route->Parameters = $Argv[ 'extra' ];
 			}
 		}
 
