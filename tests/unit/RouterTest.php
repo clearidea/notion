@@ -255,4 +255,32 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		}
 	}
 
+	public function testExtraParams()
+	{
+		$Extra = '';
+		$this->Router->get( '/', function( $Parameters ){
+			return $Parameters[ 'test' ];
+		} );
+
+		try
+		{
+			$Extra = $this->Router->run(
+				[
+					'route' => '/',
+					'type'  => 'GET',
+					'extra' =>
+						[
+							'test' => '1234'
+						]
+				]
+			);
+
+		}
+		catch( Exception $exception )
+		{
+			$this->fail( $exception->getMessage() );
+		}
+
+		$this->assertEquals( '1234', $Extra );
+	}
 }

@@ -1,4 +1,8 @@
-#Versions
+# Versions
+
+### 0.1.5 2017-12-16
+* 'extra' params can now be bassed into the run array which are in turn
+  passed to the closure.
 
 ### 0.1.4 2017-11-20
 
