@@ -2,6 +2,7 @@
 
 namespace Notion;
 
+use Neuron\Data\StringData;
 use Notion;
 
 use \Neuron\Patterns\IRunnable;
@@ -83,7 +84,15 @@ class Router implements IRunnable
 
 		if( strpos( $Route->Path, ':' ) )
 		{
-			return $this->processRouteWithParameters( $Route, $sUri );
+			$Segments = count( explode( '/', $sUri ) );
+
+			$RouteSegments = count( explode( '/', $Route->Path ) );
+
+			echo "$sUri $Segments, {$Route->Path} $RouteSegments ";
+			if( $Segments == $RouteSegments )
+			{
+				return $this->processRouteWithParameters( $Route, $sUri );
+			}
 		}
 		else
 		{
@@ -125,6 +134,12 @@ class Router implements IRunnable
 	 */
 	protected function extractRouteParams( $sUri, $aDetails )
 	{
+		if( $sUri && $sUri[ 0 ]  == '/' )
+		{
+			$String = new StringData( $sUri );
+			$sUri   = $String->right( $String->length() - 1 );
+		}
+
 		$aUri = explode( '/', $sUri );
 
 		$aParams = [];

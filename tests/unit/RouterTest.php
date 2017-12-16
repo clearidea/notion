@@ -21,7 +21,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		$Route = $this->Router->getRoute(
 			Notion\RequestMethod::DELETE,
-			'delete/1'
+			'/delete/1'
 		);
 
 		$this->assertNotNull(
@@ -48,7 +48,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		{
 			$test = $this->Router->run(
 				[
-					'route' => 'test/test',
+					'route' => '/test/test',
 					'type'  => 'GET'
 				]
 			);
@@ -67,7 +67,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		$Route = $this->Router->getRoute(
 			Notion\RequestMethod::GET,
-			'get/1'
+			'/get/1'
 		);
 
 		$this->assertNotNull(
@@ -81,17 +81,32 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		$Route = $this->Router->getRoute(
 			Notion\RequestMethod::GET,
-			'get/1/2'
+			'/get/1/2'
 		);
 
 		$Route = $this->Router->getRoute(
 			Notion\RequestMethod::GET,
-			'monkey/1/2'
+			'/monkey/1/2'
 		);
 	}
 
 	public function testGetMultipleParameters()
 	{
+
+		$this->Router->get( '/story/:id/set_state/:state_id',
+			function( $parameters )
+			{
+				return $parameters[ 'id' ].':'.$parameters[ 'state_id' ];
+			}
+		);
+
+		$this->Router->get( '/story/:id',
+			function( $parameters )
+			{
+				return $parameters[ 'id' ];
+			}
+		);
+
 		$this->Router->get( '/:controller/:action',
 			function( $parameters )
 			{
@@ -101,7 +116,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		$Route = $this->Router->getRoute(
 			Notion\RequestMethod::GET,
-			'test/run'
+			'/test/run'
 		);
 
 		$this->assertNotNull(
@@ -115,7 +130,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		$test = $this->Router->run(
 			[
-				'route' => 'test/run',
+				'route' => '/test/run',
 				'type'  => 'GET'
 			]
 		);
@@ -124,6 +139,31 @@ class RouterTest extends PHPUnit_Framework_TestCase
 			'test:run',
 			$test
 		);
+
+		$test = $this->Router->run(
+			[
+				'route' => '/story/3/set_state/4',
+				'type'  => 'GET'
+			]
+		);
+
+		$this->assertEquals(
+			'3:4',
+			$test
+		);
+
+		$test = $this->Router->run(
+			[
+				'route' => '/story/3',
+				'type'  => 'GET'
+			]
+		);
+
+		$this->assertEquals(
+			'3',
+			$test
+		);
+
 	}
 
 	public function testPost()
@@ -175,7 +215,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		$Route = $this->Router->getRoute(
 			Notion\RequestMethod::DELETE,
-			'delete/1'
+			'/delete/1'
 		);
 
 		$this->Router->dispatch( $Route );
@@ -222,7 +262,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		{
 			$this->Router->run(
 				[
-					'route' => 'foo',
+					'route' => '/foo',
 					'type'  => 'GET'
 				]
 			);
@@ -243,7 +283,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		{
 			$this->Router->run(
 				[
-					'route' => 'foo',
+					'route' => '/foo',
 					'type'  => 'GET'
 				]
 			);
