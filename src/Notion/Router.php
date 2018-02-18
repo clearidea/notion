@@ -73,6 +73,11 @@ class Router implements IRunnable
 		return $this;
 	}
 
+	protected function isRouteWithParams( Route $Route )
+	{
+		return strpos( $Route->Path, ':' ) == true;
+	}
+
 	/**
 	 * @param $Route
 	 * @param $sUri
@@ -82,7 +87,7 @@ class Router implements IRunnable
 	{
 		// Does route have parameters?
 
-		if( strpos( $Route->Path, ':' ) )
+		if( $this->isRouteWithParams( $Route ) )
 		{
 			$Segments = count( explode( '/', $sUri ) );
 
@@ -213,23 +218,38 @@ class Router implements IRunnable
 
 		foreach( $aRoutes as $Route )
 		{
-			$aParams = $this->processRoute( $Route, $sUri );
-
-			if( $aParams )
+			if( !$this->isRouteWithParams( $Route ) )
 			{
-				if( is_array( $aParams ) )
-				{
-					$Route->Parameters = $aParams;
-				}
-				else
+				$aParams = $this->processRoute( $Route, $sUri );
+
+				if( $aParams )
 				{
 					$Route->Parameters = null;
+					return $Route;
 				}
-
-				return $Route;
 			}
 		}
 
+		foreach( $aRoutes as $Route )
+		{
+			$aParams = $this->processRoute( $Route, $sUri );
+
+			if( $this->isRouteWithParams( $Route ) )
+			{
+				if( $aParams )
+				{
+					if( is_array( $aParams ) )
+					{
+						$Route->Parameters = $aParams;
+					} else
+					{
+						$Route->Parameters = null;
+					}
+
+					return $Route;
+				}
+			}
+		}
 		return null;
 	}
 

@@ -1,5 +1,8 @@
 # Versions
 
+### 0.1.9 2017-02-18
+* Routes without parameters are now processed first.
+
 ### 0.1.8 2017-12-16
 * Removed some debug code. :|
 
