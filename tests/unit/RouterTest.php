@@ -307,6 +307,64 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 	}
 
+	public function testStaticComesFirst()
+	{
+		$this->Router->get( '/story/:id',
+			function( $parameters )
+			{
+				return $parameters[ 'id' ];
+			}
+		);
+
+		$this->Router->get( '/story/static',
+			function( $parameters )
+			{
+				return 'static';
+			}
+		);
+
+		$Result = $this->Router->run(
+			[
+				'route' => '/story/static',
+				'type'  => 'GET'
+			]
+		);
+
+		$this->assertEquals(
+			'static',
+			$Result
+		);
+	}
+
+	public function testStaticComesFirst2()
+	{
+		$this->Router->get( '/story/static',
+			function( $parameters )
+			{
+				return 'static';
+			}
+		);
+
+		$this->Router->get( '/story/:id',
+			function( $parameters )
+			{
+				return $parameters[ 'id' ];
+			}
+		);
+
+		$Result = $this->Router->run(
+			[
+				'route' => '/story/static',
+				'type'  => 'GET'
+			]
+		);
+
+		$this->assertEquals(
+			'static',
+			$Result
+		);
+	}
+
 	public function testExtraParams()
 	{
 		$Extra = '';
