@@ -12,11 +12,16 @@ class FilterTest extends PHPUnit_Framework_TestCase
 	public function testRoutePreFilter()
 	{
 		$Filter = false;
+		$Name = '';
 
 		$this->Router->registerFilter(
 			'PreFilter',
 			new \Notion\Filter(
-				function() use ( &$Filter ) { $Filter = true; }
+				function( \Notion\Route $Route ) use ( &$Filter, &$Name )
+				{
+					$Filter = true;
+					$Name = $Route->Path;
+				}
 			)
 		);
 
@@ -36,6 +41,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
 		$this->Router->dispatch( $Route );
 
 		$this->assertTrue( $Filter );
+		$this->assertEquals( '/test', $Name );
 	}
 
 	public function testRoutePostFilter()
