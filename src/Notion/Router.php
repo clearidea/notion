@@ -14,29 +14,61 @@ use \Neuron\Patterns\IRunnable;
 
 class Router implements IRunnable
 {
-	private $_aDelete = [];
-	private $_aGet    = [];
-	private $_aPost   = [];
-	private $_aPut    = [];
+	private $_Delete = [];
+	private $_Get    = [];
+	private $_Post   = [];
+	private $_Put    = [];
+	private $_Filter = [];
+
+	private $_FilterRegistry = [];
+
+	public function registerFilter( string $Name, Filter $Filter )
+	{
+		$this->_FilterRegistry[ $Name ] = $Filter;
+	}
+
+	public function getFilter( string $Name ) : Filter
+	{
+		$Filter = null;
+
+		if( array_key_exists( $Name, $this->_FilterRegistry ) )
+		{
+			$Filter = $this->_FilterRegistry[ $Name ];
+		}
+		else
+		{
+			throw new \Exception( "Filter $Name not registered." );
+		}
+		return $Filter;
+	}
+
+	public function addFilter( string $Filter )
+	{
+		$this->_Filter[] = $Filter;
+	}
 
 	/**
 	 * @param array $aRoutes
 	 * @param $sRoute
 	 * @param $function
+	 * @param $Filter
+	 * @throws \Exception
 	 */
-	protected function addRoute( array &$aRoutes, $sRoute, $function )
+	protected function addRoute( array &$aRoutes, $sRoute, $function, $Filter )
 	{
-		$aRoutes[] = new Notion\Route( $sRoute, $function );
+		$aRoutes[] = new Notion\Route( $sRoute, $function, $Filter );
 	}
 
 	/**
 	 * @param $sRoute
 	 * @param $function
 	 * @return $this
+	 * @param $Filter
+	 * @throws \Exception
 	 */
-	public function delete( $sRoute, $function )
+	public function delete( $sRoute, $function, $Filter = null )
 	{
-		$this->addRoute( $this->_aDelete, $sRoute, $function );
+		$this->addRoute( $this->_Delete, $sRoute, $function, $Filter );
 		return $this;
 	}
 
@@ -44,10 +76,12 @@ class Router implements IRunnable
 	 * @param $sRoute
 	 * @param $function
 	 * @return $this
+	 * @param $Filter
+	 * @throws \Exception
 	 */
-	public function get( $sRoute, $function )
+	public function get( $sRoute, $function, $Filter = null )
 	{
-		$this->addRoute( $this->_aGet, $sRoute, $function );
+		$this->addRoute( $this->_Get, $sRoute, $function, $Filter );
 		return $this;
 	}
 
@@ -55,24 +89,32 @@ class Router implements IRunnable
 	 * @param $sRoute
 	 * @param $function
 	 * @return $this
+	 * @param $Filter
+	 * @throws \Exception
 	 */
-	public function post( $sRoute, $function )
+	public function post( $sRoute, $function, $Filter = null )
 	{
-		$this->addRoute( $this->_aPost, $sRoute, $function );
+		$this->addRoute( $this->_Post, $sRoute, $function, $Filter );
 		return $this;
 	}
 
 	/**
 	 * @param $sRoute
 	 * @param $function
+	 * @param $Filter
 	 * @return $this
+	 * @throws \Exception
 	 */
-	public function put( $sRoute, $function )
+	public function put( $sRoute, $function, $Filter = null )
 	{
-		$this->addRoute( $this->_aPut, $sRoute, $function );
+		$this->addRoute( $this->_Put, $sRoute, $function, $Filter );
 		return $this;
 	}
 
+	/**
+	 * @param Route $Route
+	 * @return bool
+	 */
 	protected function isRouteWithParams( Route $Route )
 	{
 		return strpos( $Route->Path, ':' ) == true;
@@ -82,6 +124,7 @@ class Router implements IRunnable
 	 * @param $Route
 	 * @param $sUri
 	 * @return array|bool
+	 * @throws \Exception
 	 */
 	protected function processRoute( Route $Route, $sUri )
 	{
@@ -122,6 +165,7 @@ class Router implements IRunnable
 	 * @param Route $Route
 	 * @param $sUri
 	 * @return array
+	 * @throws \Exception
 	 */
 	protected function processRouteWithParameters( Route $Route, $sUri )
 	{
@@ -187,19 +231,19 @@ class Router implements IRunnable
 		switch( $iMethod )
 		{
 			case RequestMethod::DELETE:
-				$aRoutes = $this->_aDelete;
+				$aRoutes = $this->_Delete;
 				break;
 
 			case RequestMethod::GET:
-				$aRoutes = $this->_aGet;
+				$aRoutes = $this->_Get;
 				break;
 
 			case RequestMethod::POST:
-				$aRoutes = $this->_aPost;
+				$aRoutes = $this->_Post;
 				break;
 
 			case RequestMethod::PUT:
-				$aRoutes = $this->_aPut;
+				$aRoutes = $this->_Put;
 				break;
 		}
 
@@ -210,6 +254,7 @@ class Router implements IRunnable
 	 * @param $sUri
 	 * @param $iMethod
 	 * @return \Notion\Route
+	 * @throws \Exception
 	 */
 
 	public function getRoute( $iMethod, $sUri )
@@ -241,7 +286,8 @@ class Router implements IRunnable
 					if( is_array( $aParams ) )
 					{
 						$Route->Parameters = $aParams;
-					} else
+					}
+					else
 					{
 						$Route->Parameters = null;
 					}
@@ -253,6 +299,24 @@ class Router implements IRunnable
 		return null;
 	}
 
+	protected function executePreFilters()
+	{
+		foreach( $this->_Filter as $FilterName )
+		{
+			$Filter = $this->getFilter( $FilterName );
+			$Filter->pre();
+		}
+	}
+
+	protected function executePostFilters()
+	{
+		foreach( $this->_Filter as $FilterName )
+		{
+			$Filter = $this->getFilter( $FilterName );
+			$Filter->post();
+		}
+	}
+
 	/**
 	 * @param \Notion\Route $Route
 	 * @return mixed
@@ -260,9 +324,13 @@ class Router implements IRunnable
 
 	public function dispatch( Route $Route )
 	{
-		$function = $Route->Function;
+		$this->executePreFilters();
 
-		return $function( $Route->Parameters );
+		$Result = $Route->execute( $this );
+
+		$this->executePostFilters();
+
+		return $Result;
 	}
 
 	/**

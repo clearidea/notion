@@ -7,15 +7,17 @@ class Route
 	public $Path;
 	public $Function;
 	public $Parameters;
+	public $Filter;
 
 	/**
 	 * Route constructor.
 	 * @param $path string route path i.e. /part/new or /part/:id
-	 * @param $function function the function to call on a matching route.
+	 * @param $function the function to call on a matching route.
+	 * @param $Filter string the name of the filter to match with this route.
 	 * @throws \Exception
 	 */
 
-	public function __construct( $path, $function )
+	public function __construct( $path, $function, $Filter = null )
 	{
 		if( !is_callable( $function ) )
 		{
@@ -25,11 +27,13 @@ class Route
 		$this->Path       = $path;
 		$this->Function   = $function;
 		$this->Parameters = null;
+		$this->Filter     = $Filter;
 	}
 
 	/**
 	 * Extracts the template array from the route definition.
 	 * @return array
+	 * @throws \Exception
 	 */
 
 	public function parseParams()
@@ -78,5 +82,35 @@ class Route
 				throw new RouteParamException( "Duplicate parameter '$Param' found for route {$this->Path}'." );
 			}
 		}
+	}
+
+	/**
+	 * @param Router $Router
+	 * @return mixed
+	 */
+	public function execute( Router $Router )
+	{
+		$Filter = null;
+
+		if( $this->Filter )
+		{
+			$Filter = $Router->getFilter( $this->Filter );
+		}
+
+		if( $Filter )
+		{
+			$Filter->pre();
+		}
+
+		$Function = $this->Function;
+
+		$Result = $Function( $this->Parameters );
+
+		if( $Filter )
+		{
+			$Filter->post();
+		}
+
+		return $Result;
 	}
 }

@@ -1,5 +1,9 @@
 # Versions
 
+### 0.2.0
+
+* Adds pre and post route filters.
+
 ### 0.1.9 2017-02-18
 * Routes without parameters are now processed first.
 
