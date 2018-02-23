@@ -1,5 +1,9 @@
 # Versions
 
+### 0.2.1 2018-02-23
+
+* Adds Route as param to filter.
+
 ### 0.2.0 2018-02-23
 
 * Adds pre and post route filters.

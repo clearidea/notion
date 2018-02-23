@@ -299,21 +299,21 @@ class Router implements IRunnable
 		return null;
 	}
 
-	protected function executePreFilters()
+	protected function executePreFilters( Route $Route )
 	{
 		foreach( $this->_Filter as $FilterName )
 		{
 			$Filter = $this->getFilter( $FilterName );
-			$Filter->pre();
+			$Filter->pre( $Route );
 		}
 	}
 
-	protected function executePostFilters()
+	protected function executePostFilters( Route $Route )
 	{
 		foreach( $this->_Filter as $FilterName )
 		{
 			$Filter = $this->getFilter( $FilterName );
-			$Filter->post();
+			$Filter->post( $Route );
 		}
 	}
 
@@ -324,11 +324,11 @@ class Router implements IRunnable
 
 	public function dispatch( Route $Route )
 	{
-		$this->executePreFilters();
+		$this->executePreFilters( $Route );
 
 		$Result = $Route->execute( $this );
 
-		$this->executePostFilters();
+		$this->executePostFilters( $Route );
 
 		return $Result;
 	}

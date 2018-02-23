@@ -87,6 +87,7 @@ class Route
 	/**
 	 * @param Router $Router
 	 * @return mixed
+	 * @throws \Exception
 	 */
 	public function execute( Router $Router )
 	{
@@ -99,7 +100,7 @@ class Route
 
 		if( $Filter )
 		{
-			$Filter->pre();
+			$Filter->pre( $this );
 		}
 
 		$Function = $this->Function;
@@ -108,7 +109,7 @@ class Route
 
 		if( $Filter )
 		{
-			$Filter->post();
+			$Filter->post( $this );
 		}
 
 		return $Result;

@@ -13,7 +13,7 @@ class Filter
 		$this->_PostFn = $PostFn;
 	}
 
-	public function pre()
+	public function pre( Route $Route )
 	{
 		if( !$this->_PreFn )
 		{
@@ -22,10 +22,10 @@ class Filter
 
 		$Function = $this->_PreFn;
 
-		return $Function();
+		return $Function( $Route );
 	}
 
-	public function post()
+	public function post( Route $Route )
 	{
 		if( !$this->_PostFn )
 		{
@@ -34,6 +34,6 @@ class Filter
 
 		$Function = $this->_PostFn;
 
-		return $Function();
+		return $Function( $Route );
 	}
 }
