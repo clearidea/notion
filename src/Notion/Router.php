@@ -22,12 +22,12 @@ class Router implements IRunnable
 
 	private $_FilterRegistry = [];
 
-	public function registerFilter( string $Name, Filter $Filter )
+	public function registerFilter( $Name, Filter $Filter )
 	{
 		$this->_FilterRegistry[ $Name ] = $Filter;
 	}
 
-	public function getFilter( string $Name ) : Filter
+	public function getFilter( $Name ) : Filter
 	{
 		$Filter = null;
 
@@ -42,7 +42,7 @@ class Router implements IRunnable
 		return $Filter;
 	}
 
-	public function addFilter( string $Filter )
+	public function addFilter( $Filter )
 	{
 		$this->_Filter[] = $Filter;
 	}
