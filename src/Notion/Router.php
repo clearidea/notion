@@ -27,7 +27,7 @@ class Router implements IRunnable
 		$this->_FilterRegistry[ $Name ] = $Filter;
 	}
 
-	public function getFilter( $Name ) : Filter
+	public function getFilter( $Name )
 	{
 		$Filter = null;
 
