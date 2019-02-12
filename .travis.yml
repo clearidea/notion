@@ -10,4 +10,4 @@ script:
   - phpunit --configuration build/phpunit.xml
 
 notifications:
-  slack: clearidea:UL7PtI529f0u9rcGW108IoE0
+  slack: dragonflyrg:w3hYXjTOZjrmBGQuszMILN7K
