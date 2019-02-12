@@ -6,7 +6,7 @@ class RouterTest extends PHPUnit\Framework\TestCase
 {
 	public $Router;
 
-	public function setUp()
+	protected function setUp()
 	{
 		$this->Router = new \Notion\Router();
 	}
