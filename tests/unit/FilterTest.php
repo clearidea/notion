@@ -6,7 +6,7 @@ class FilterTest extends PHPUnit\Framework\TestCase
 {
 	public $Router;
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		$this->Router = new \Notion\Router();
 	}
