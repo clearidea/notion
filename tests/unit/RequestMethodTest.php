@@ -1,12 +1,14 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Created by PhpStorm.
  * User: lee
  * Date: 8/15/16
  * Time: 5:45 PM
  */
-class RequestMethodTest extends PHPUnit_Framework_TestCase
+class RequestMethodTest extends PHPUnit\Framework\TestCase
 {
 	public function testMethod()
 	{

@@ -1,6 +1,8 @@
 <?php
 
-class RouterTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class RouterTest extends PHPUnit\Framework\TestCase
 {
 	public $Router;
 
@@ -204,6 +206,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 	}
 
+	/**
+	 * @doesNotPerformAssertions
+	 */
 	public function testDispatch()
 	{
 		$this->Router->delete(
@@ -221,6 +226,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		$this->Router->dispatch( $Route );
 	}
 
+	/**
+	 * @doesNotPerformAssertions
+	 */
 	public function testRunSuccess()
 	{
 		$this->Router->get( '/', function(){} );
@@ -240,6 +248,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		}
 	}
 
+	/**
+	 * @doesNotPerformAssertions
+	 */
 	public function testRunMissingRoute()
 	{
 		$this->Router->get( '/', function(){} );
@@ -254,6 +265,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		}
 	}
 
+	/**
+	 * @doesNotPerformAssertions
+	 */
 	public function testRun404Fail()
 	{
 		$this->Router->get( '/', function(){} );
@@ -295,6 +309,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		}
 	}
 
+	/**
+	 * @doesNotPerformAssertions
+	 */
 	public function testEmptyRoute()
 	{
 		$this->Router->get( '/',    function(){} );
