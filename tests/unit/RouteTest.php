@@ -75,17 +75,11 @@ class RouteTest extends TestCase
 		Route::get(
 			'/get/:id',
 			function(){ return 'get'; }
-			)
-			->setName( 'test.get' );
+			);
 
 		$Route = \Notion\Router::getInstance()->getRoute(
 			Notion\RequestMethod::GET,
 			'/get/1'
-		);
-
-		$this->assertEquals(
-			'test.get',
-			$Route->getName()
 		);
 
 		$this->assertNotNull(

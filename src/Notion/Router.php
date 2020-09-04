@@ -53,15 +53,15 @@ class Router extends Memory implements IRunnable
 	 * @param $sRoute
 	 * @param $function
 	 * @param $Filter
-	 * @return RouteMap
+	 * @return Router
 	 * @throws \Exception
 	 */
-	protected function addRoute( array &$aRoutes, $sRoute, $function, $Filter ) : Notion\RouteMap
+	protected function addRoute( array &$aRoutes, $sRoute, $function, $Filter ) : Notion\Router
 	{
 		$Route = new Notion\RouteMap( $sRoute, $function, $Filter );
 		$aRoutes[] = $Route;
 
-		return $Route;
+		return $this;
 	}
 
 	/**
