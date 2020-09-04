@@ -1,10 +1,12 @@
 <?php
 
-class FilterTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class FilterTest extends PHPUnit\Framework\TestCase
 {
 	public $Router;
 
-	public function setup()
+	protected function setUp() : void
 	{
 		$this->Router = new \Notion\Router();
 	}
@@ -17,7 +19,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
 		$this->Router->registerFilter(
 			'PreFilter',
 			new \Notion\Filter(
-				function( \Notion\Route $Route ) use ( &$Filter, &$Name )
+				function( \Notion\RouteMap $Route ) use ( &$Filter, &$Name )
 				{
 					$Filter = true;
 					$Name = $Route->Path;

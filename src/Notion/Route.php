@@ -4,114 +4,36 @@ namespace Notion;
 
 class Route
 {
-	public $Path;
-	public $Function;
-	public $Parameters;
-	public $Filter;
-
-	/**
-	 * Route constructor.
-	 * @param $path string route path i.e. /part/new or /part/:id
-	 * @param $function the function to call on a matching route.
-	 * @param $Filter string the name of the filter to match with this route.
-	 * @throws \Exception
-	 */
-
-	public function __construct( $path, $function, $Filter = null )
+	public static function delete( string $Route, $Function ) : RouteMap
 	{
-		if( !is_callable( $function ) )
-		{
-			throw new \Exception( 'Route: function not callable.' );
-		}
+		$Router = Router::getInstance();
 
-		$this->Path       = $path;
-		$this->Function   = $function;
-		$this->Parameters = null;
-		$this->Filter     = $Filter;
+		return $Router->delete( $Route, $Function );
 	}
 
-	/**
-	 * Extracts the template array from the route definition.
-	 * @return array
-	 * @throws \Exception
-	 */
-
-	public function parseParams()
+	public static function get( string $Route, $Function ) : RouteMap
 	{
-		$aDetails = [];
+		$Router = Router::getInstance();
 
-		$aParts = explode( '/', $this->Path );
-		array_shift( $aParts );
-
-		foreach( $aParts as $sPart )
-		{
-			if( substr( $sPart, 0, 1 ) == ':' )
-			{
-				$Param = substr( $sPart, 1 );
-
-				$this->checkForDuplicateParams( $Param, $aDetails );
-
-				$aDetails[] = [
-					'param'  => $Param,
-					'action' => false
-				];
-			}
-			else
-			{
-				$aDetails[] = [
-					'param'  => false,
-					'action' => $sPart
-				];
-			}
-		}
-		return $aDetails;
+		return $Router->get( $Route, $Function );
 	}
 
-	/**
-	 * @param $Param
-	 * @param $Params
-	 * @throws RouteParamException
-	 */
-
-	protected function checkForDuplicateParams( $Param, $Params )
+	public static function post( string $Route, $Function ) : RouteMap
 	{
-		foreach( $Params as $Current )
-		{
-			if( $Param == $Current[ 'param' ] )
-			{
-				throw new RouteParamException( "Duplicate parameter '$Param' found for route {$this->Path}'." );
-			}
-		}
+		$Router = Router::getInstance();
+
+		return $Router->post( $Route, $Function );
 	}
 
-	/**
-	 * @param Router $Router
-	 * @return mixed
-	 * @throws \Exception
-	 */
-	public function execute( Router $Router )
+	public static function put( string $Route, $Function ) : RouteMap
 	{
-		$Filter = null;
+		$Router = Router::getInstance();
 
-		if( $this->Filter )
-		{
-			$Filter = $Router->getFilter( $this->Filter );
-		}
+		return $Router->put( $Route, $Function );
+	}
 
-		if( $Filter )
-		{
-			$Filter->pre( $this );
-		}
-
-		$Function = $this->Function;
-
-		$Result = $Function( $this->Parameters );
-
-		if( $Filter )
-		{
-			$Filter->post( $this );
-		}
-
-		return $Result;
+	public static function dispatch( array $Params )
+	{
+		return Router::getInstance()->run( $Params );
 	}
 }
